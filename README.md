@@ -9,4 +9,4 @@ Our frist three goals relate to the familiarizaton of:
 The POC will have capabiliies like
 - Authentication
 - Pinch classifier based on transactions
-- monthly aggregations in the app of the end user
+- Monthly aggregations in the app of the end user
