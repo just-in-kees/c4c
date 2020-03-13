@@ -10,3 +10,5 @@ The POC will have capabiliies like
 - Authentication
 - Pinch classifier based on transactions
 - Monthly aggregations in the app of the end user
+
+[](images/c4c.png)
