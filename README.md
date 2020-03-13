@@ -6,7 +6,9 @@ Our first three goals relate to the familiarization of:
 * PSD2 capability of european banks
 * Cross OS app engineering tools like Flutter
 
+
 The POC will have capabilities like:
 * Authentication
 * Pinch classifier based on transactions
 * Monthly aggregations in the app of the end user
+![](images/c4c.png)
