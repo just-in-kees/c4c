@@ -24,7 +24,7 @@ class MyApp extends StatefulWidget {
 
 Future<Transaction> fetchTransaction(int index) async {
 
-  final token = 'eyJhbGciOiJFUzI1NiIsImtpZCI6IjdkOTk5MmZmLThhZDktNGRjNS1iYmY0LTBhZjU0M2Y4YWMyYiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODU3NDA2ODIsImlhdCI6MTU4NTczMzQ4MiwiaXNzIjoidGluazovL2F1dGgiLCJqdGkiOiI4YTlmZDJkZS1hNDFkLTRkNDktOTM3NS03M2UxZmRlNGNiOWQiLCJvcmlnaW4iOiJtYWluIiwic2NvcGVzIjpbImludmVzdG1lbnRzOnJlYWQiLCJ1c2VyOnJlYWQiLCJhY2NvdW50czpyZWFkIiwidHJhbnNhY3Rpb25zOnJlYWQiXSwic3ViIjoidGluazovL2F1dGgvdXNlci9hOTU1NGNmMWRhY2E0NTJmYTI5MjVjNWM3YjFjZWFiZCIsInRpbms6Ly9hcHAvaWQiOiJmNTRmNWYzNGIzOWM0NGE4OWJiYTQ1OGMzMzY4N2M4MiJ9.hTiDD2MzovvGIZrtGoccVFE2HDw-wqEBei8UxNE8AYmUXpiAypov9LNwZLzwMI_Ts4WhgQMQIzQfY8P4LnDznA';
+  final token = 'eyJhbGciOiJFUzI1NiIsImtpZCI6ImY2ZGY1NzAyLTEwYWItNGI5ZS05ZGYwLTU5YWRhNzgxZjE5MSIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODU5MjMxNjksImlhdCI6MTU4NTkxNTk2OSwiaXNzIjoidGluazovL2F1dGgiLCJqdGkiOiI4NDk1MzhiNy05NmNjLTRmMjAtOGJmMi1lZjZmNTdhZDliZjkiLCJvcmlnaW4iOiJtYWluIiwic2NvcGVzIjpbImludmVzdG1lbnRzOnJlYWQiLCJ1c2VyOnJlYWQiLCJhY2NvdW50czpyZWFkIiwidHJhbnNhY3Rpb25zOnJlYWQiXSwic3ViIjoidGluazovL2F1dGgvdXNlci82NjgzNjE4NzQ2M2U0M2Q2YWI4ZGU2YjMxOThhOTExYSIsInRpbms6Ly9hcHAvaWQiOiJmNTRmNWYzNGIzOWM0NGE4OWJiYTQ1OGMzMzY4N2M4MiJ9.ezlD59EH8-5oNaLXgDPYrw_PM6UbeZ-6fAt6jHRyyzEch5nDwBHLxqpLcSIoH8gKpZ0zDRSbDg02rlLchrwcRg';
 
   final response = await http.get(
       'https://api.tink.com/api/v1/transactions/',
@@ -56,7 +56,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    futureTransaction = fetchTransaction(0);
+    futureTransaction = fetchTransaction(10);
   }
 
   String tester = '';
@@ -67,7 +67,7 @@ class _MyAppState extends State<MyApp> {
       FutureBuilder<Transaction>(
         future: futureTransaction,
         builder: (context, snapshot) {
-          futureTransaction = fetchTransaction(0);
+          futureTransaction = fetchTransaction(10);
           if (snapshot.hasData) {
             return Text(snapshot.data.description);
           } else if (snapshot.hasError) {
@@ -114,7 +114,7 @@ class _MyAppState extends State<MyApp> {
           FutureBuilder<Transaction>(
             future: futureTransaction,
             builder: (context, snapshot) {
-              futureTransaction = fetchTransaction(0);
+              futureTransaction = fetchTransaction(10);
               if (snapshot.hasData) {
                 return Text(snapshot.data.description);
               } else if (snapshot.hasError) {

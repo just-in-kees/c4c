@@ -24,7 +24,7 @@ class _HomePageState extends State<HomePage> {
   List<Widget> getList() {
     List<HomeTransaction> list = [];
     for (int i = 0; i < 10; i ++) {
-      list.add(HomeTransaction(title: "Transaction",));
+      list.add(HomeTransaction(title: "hello", futureTransaction: fetchTransaction(i))); //,title: "Transaction",));
     }
     return list;
   }
