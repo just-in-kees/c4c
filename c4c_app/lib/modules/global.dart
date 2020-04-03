@@ -9,10 +9,16 @@ TextStyle homeTitles = new TextStyle(
     fontSize: 40
 );
 
-TextStyle transactionTitles = new TextStyle(
+TextStyle transactionDetails = new TextStyle(
+    fontFamily: 'Avenir',
+    fontWeight: FontWeight.bold,
+    color: darkGreyColor,
+    fontSize: 20
+);
+
+TextStyle transactionDate = new TextStyle(
     fontFamily: 'Avenir',
     fontWeight: FontWeight.bold,
     color: darkGreyColor,
     fontSize: 10
 );
-

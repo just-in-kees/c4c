@@ -30,18 +30,44 @@ class HomeTransaction extends StatelessWidget {
           Radio(
 
           ),
-          FutureBuilder<Transaction>(
-            future: futureTransaction,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Text(snapshot.data.description, style: transactionTitles,);
-              } else if (snapshot.hasError) {
-                return Text("${snapshot.error}");
-              }
+          Flexible(
+            child: FutureBuilder<Transaction>(
+              future: futureTransaction,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Container(
+                    margin: EdgeInsets.only(top: 5),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          snapshot.data.description,
+                          // Cuts of the text and shows ...
+                          overflow: TextOverflow.ellipsis,
+                          style: transactionDetails,
+                    ),
+                        Text(
+                          snapshot.data.amount.toString(),
+                          style: transactionDetails,
+                    ),
+                        Text(
+                          DateTime.fromMillisecondsSinceEpoch(snapshot.data.date).day.toString()
+                            + "/" + DateTime.fromMillisecondsSinceEpoch(snapshot.data.date).month.toString()
+                            + "/" + DateTime.fromMillisecondsSinceEpoch(snapshot.data.date).year.toString(),
+                          style: transactionDetails,
+                        )
+                    ],
+                  ),
+                  );
 
-              // By default, show a loading spinner.
-              return CircularProgressIndicator();
-            },
+                } else if (snapshot.hasError) {
+                  return Text("${snapshot.error}");
+                }
+
+                // By default, show a loading spinner.
+                return CircularProgressIndicator();
+              },
+            ),
           ),
         ],
       ),
