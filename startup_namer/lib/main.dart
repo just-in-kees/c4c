@@ -22,119 +22,9 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
+Future<Transaction> fetchTransaction(int index) async {
 
-class RandomWordsState extends State<RandomWords> {
-  final List<WordPair> _suggestions = <WordPair>[];
-  final Set<WordPair> _saved = Set<WordPair>();
-  final TextStyle _biggerFont = TextStyle(fontSize: 18.0);
-
-  Widget _buildSuggestions() {
-    return ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemBuilder: /*1*/ (context, i) {
-          if (i.isOdd) return Divider(); /*2*/
-
-          final index = i ~/ 2; /*3*/
-          if (index >= _suggestions.length) {
-            _suggestions.addAll(generateWordPairs().take(10)); /*4*/
-          }
-          return _buildRow(_suggestions[index]);
-        });
-  }
-
-  Widget _buildRow(WordPair pair) {
-    final bool alreadySaved = _saved.contains(pair);
-    return ListTile(
-      title: Text(
-        pair.asPascalCase,
-        style: _biggerFont,
-      ),
-      trailing: Icon(
-        alreadySaved ? Icons.favorite : Icons.favorite_border,
-        color: alreadySaved ? Colors.orange : null
-      ),
-      onTap: () {
-        setState(() {
-          if (alreadySaved) {
-            _saved.remove(pair);
-          } else {
-            _saved.add(pair);
-          }
-        });
-      }
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('C4C transaction classifier'),
-        actions: <Widget>[
-          IconButton(icon: Icon(Icons.list), onPressed: _pushSaved),
-        ],
-      ),
-      body: _buildSuggestions(),
-    );
-  }
-
-  void _pushSaved() {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (BuildContext context) {
-          final Iterable<ListTile> tiles = _saved.map(
-              (WordPair pair) {
-                return ListTile(
-                  title: Text(
-                    pair.asPascalCase,
-                    style: _biggerFont,
-                  ),
-                );
-              },
-          );
-          final List<Widget> divided = ListTile
-              .divideTiles(
-                context: context,
-                tiles: tiles,
-          )
-          .toList();
-
-          var tinkLinkPart1 = "https://link.tink.com/1.0/authorize/?client_id=";
-          var clientID = "clientID goes here";
-          var tinkLinkPart2 = "&redirect_uri=https%3A%2F%2Fconsole.tink.com%2Fcallback&scope=accounts:read,investments:read,transactions:read,user:read&market=NL&locale=en_US&input_provider=nl-ing-ob";
-          var tinkLink = tinkLinkPart1 + clientID + tinkLinkPart2;
-
-
-
-
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('Authentication iFrame'),
-            ),
-//            body: ListView(children: divided),
-
-            body: Container(
-
-                child: WebView(
-
-                initialUrl: Uri.dataFromString('<html><body><iframe src=$tinkLink ></iframe></body><script type="text/javascript">window.extents.postMessage(document.body.offsetHeight);</script></html>', mimeType: 'text/html').toString(),
-                  javascriptMode: JavascriptMode.unrestricted,
-
-                ),
-
-            )
-          );
-        },
-      ),
-    );
-  }
-
-}
-
-
-Future<Transaction> fetchTransaction() async {
-
-  final token = 'BEARER TOKEN HERE';
+  final token = 'eyJhbGciOiJFUzI1NiIsImtpZCI6IjdkOTk5MmZmLThhZDktNGRjNS1iYmY0LTBhZjU0M2Y4YWMyYiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODU3NDA2ODIsImlhdCI6MTU4NTczMzQ4MiwiaXNzIjoidGluazovL2F1dGgiLCJqdGkiOiI4YTlmZDJkZS1hNDFkLTRkNDktOTM3NS03M2UxZmRlNGNiOWQiLCJvcmlnaW4iOiJtYWluIiwic2NvcGVzIjpbImludmVzdG1lbnRzOnJlYWQiLCJ1c2VyOnJlYWQiLCJhY2NvdW50czpyZWFkIiwidHJhbnNhY3Rpb25zOnJlYWQiXSwic3ViIjoidGluazovL2F1dGgvdXNlci9hOTU1NGNmMWRhY2E0NTJmYTI5MjVjNWM3YjFjZWFiZCIsInRpbms6Ly9hcHAvaWQiOiJmNTRmNWYzNGIzOWM0NGE4OWJiYTQ1OGMzMzY4N2M4MiJ9.hTiDD2MzovvGIZrtGoccVFE2HDw-wqEBei8UxNE8AYmUXpiAypov9LNwZLzwMI_Ts4WhgQMQIzQfY8P4LnDznA';
 
   final response = await http.get(
       'https://api.tink.com/api/v1/transactions/',
@@ -147,7 +37,7 @@ Future<Transaction> fetchTransaction() async {
     // If the server did return a 200 OK response,
     // then parse the JSON.
     final responseJson = json.decode(response.body);
-    return Transaction.fromJson(responseJson[0]);
+    return Transaction.fromJson(responseJson[index]);
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
@@ -156,37 +46,75 @@ Future<Transaction> fetchTransaction() async {
 }
 
 
-
-class RandomWords extends StatefulWidget {
-  @override
-  RandomWordsState createState() => RandomWordsState();
-}
-
-
 class _MyAppState extends State<MyApp> {
   Future<Transaction> futureTransaction;
+  final List <Transaction> _transactions = <Transaction>[];
+  final Set<Transaction> _saved = Set<Transaction>();
+  final TextStyle _biggerFont = TextStyle(fontSize: 18.0);
+
 
   @override
   void initState() {
     super.initState();
-    futureTransaction = fetchTransaction();
+    futureTransaction = fetchTransaction(0);
+  }
+
+  String tester = '';
+
+  void changedata(){
+    setState(() {
+      fetchTransaction(1) .toString();
+      FutureBuilder<Transaction>(
+        future: futureTransaction,
+        builder: (context, snapshot) {
+          futureTransaction = fetchTransaction(0);
+          if (snapshot.hasData) {
+            return Text(snapshot.data.description);
+          } else if (snapshot.hasError) {
+            return Text("${snapshot.error}");
+          }
+
+          // By default, show a loading spinner.
+          return CircularProgressIndicator();
+        },
+      );
+
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Fetch Data Example',
+      title: 'Transactions C4C',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.orange,
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Fetch Data Example'),
+          title: Text('Transaction Fetch Example'),
+          actions: <Widget>[
+            const SizedBox(height: 30),
+          ],
         ),
-        body: Center(
-          child: FutureBuilder<Transaction>(
+        body:
+//        MyStatelessWidget(),
+        Column(
+          children:[
+              RaisedButton(
+                onPressed: () {},
+                child: const Text('Other Transaction', style: TextStyle(fontSize: 20)),
+              ),
+            const SizedBox(height: 30),
+            IconButton(icon: Icon(Icons.navigate_next), onPressed: changedata),//() => futureTransaction = fetchTransaction(0)),
+
+            Text('$tester'),
+//          justDoIt(),
+
+
+          FutureBuilder<Transaction>(
             future: futureTransaction,
             builder: (context, snapshot) {
+              futureTransaction = fetchTransaction(0);
               if (snapshot.hasData) {
                 return Text(snapshot.data.description);
               } else if (snapshot.hasError) {
@@ -196,8 +124,60 @@ class _MyAppState extends State<MyApp> {
               // By default, show a loading spinner.
               return CircularProgressIndicator();
             },
-          ),
+          )
+        ],
         ),
+      ),
+    );
+  }
+
+
+void justDoIt(tester) {
+  FutureBuilder<Transaction>(
+    future: futureTransaction,
+    builder: (context, snapshot) {
+      futureTransaction = fetchTransaction(0);
+      if (snapshot.hasData) {
+        return Text(snapshot.data.description);
+      } else if (snapshot.hasError) {
+        return Text("${snapshot.error}");
+      }
+
+      // By default, show a loading spinner.
+      return CircularProgressIndicator();
+    },
+  );
+}
+
+  void _pushSaved() {
+    futureTransaction = fetchTransaction(1);
+    return;
+  }
+
+}
+/// This is the stateless widget that the main application instantiates.
+class MyStatelessWidget extends StatelessWidget {
+  MyStatelessWidget({Key key}) : super(key: key);
+
+  @override
+  Widget trans(int index) {
+    fetchTransaction(index);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          const SizedBox(height: 30),
+          RaisedButton(
+            onPressed: () => fetchTransaction(10),
+            child: const Text('Other Transaction', style: TextStyle(fontSize: 20)),
+          ),
+          const SizedBox(height: 30),
+          trans(10),
+        ],
       ),
     );
   }
