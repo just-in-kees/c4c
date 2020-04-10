@@ -122,10 +122,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   Tab(icon: new Icon(Icons.more_horiz),)
                 ],
                 labelColor: darkGreyColor,
-                unselectedLabelColor: Colors.blue,
+                unselectedLabelColor: Colors.white70,
                 indicatorSize: TabBarIndicatorSize.label,
                 indicatorPadding: EdgeInsets.all(5.0),
-                indicatorColor: Colors.purple,
+                indicatorColor: Colors.deepOrangeAccent,
               ),
               backgroundColor: Colors.orangeAccent,
             ),
