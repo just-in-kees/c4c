@@ -248,9 +248,7 @@ class MyStatelessWidget extends StatelessWidget {
 }
 
 Future<List<Transaction>> fetchTransactionList() async {
-  final token =
-      'eyJhbGciOiJFUzI1NiIsImtpZCI6IjdjODEwNTA4LWRlNGYtNGY1OC1iZTdlLTAyZmNkZjY2NDJkYiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODcxMzI3NTksImlhdCI6MTU4NzEyNTU1OSwiaXNzIjoidGluazovL2F1dGgiLCJqdGkiOiI0NmQzNTFkYi1hNzQyLTQyY2EtOTZhZS01ODJkNzc3MTJmOTIiLCJvcmlnaW4iOiJtYWluIiwic2NvcGVzIjpbImludmVzdG1lbnRzOnJlYWQiLCJ1c2VyOnJlYWQiLCJzdGF0aXN0aWNzOnJlYWQiLCJhY2NvdW50czpyZWFkIiwidHJhbnNhY3Rpb25zOnJlYWQiXSwic3ViIjoidGluazovL2F1dGgvdXNlci9jZDU2YTZiOTk0Y2I0ZWY0OGRmYWE0MjlmMmZkZWRkNSIsInRpbms6Ly9hcHAvaWQiOiJmMmQ2NDQxZWM0OTQ0NTdmYjEwN2NhODIxNzdiYjhjYiJ9.hKAeE3W6nsyo1Og73hV7x8kRsLIUnT6oSfI9Gnt5HsbyPHQt1ZYBA0F_-L3nwhrXWaXyhA-PF0y9nrNVGvpiag';
-
+  final token ='';
   final response = await http.get(
     'https://api.tink.com/api/v1/transactions/',
     headers: {
@@ -273,8 +271,7 @@ Future<List<Transaction>> fetchTransactionList() async {
 }
 
 Future<Transaction> fetchTransaction(int index) async {
-  final token =
-      'eyJhbGciOiJFUzI1NiIsImtpZCI6IjdjODEwNTA4LWRlNGYtNGY1OC1iZTdlLTAyZmNkZjY2NDJkYiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODcxMzI3NTksImlhdCI6MTU4NzEyNTU1OSwiaXNzIjoidGluazovL2F1dGgiLCJqdGkiOiI0NmQzNTFkYi1hNzQyLTQyY2EtOTZhZS01ODJkNzc3MTJmOTIiLCJvcmlnaW4iOiJtYWluIiwic2NvcGVzIjpbImludmVzdG1lbnRzOnJlYWQiLCJ1c2VyOnJlYWQiLCJzdGF0aXN0aWNzOnJlYWQiLCJhY2NvdW50czpyZWFkIiwidHJhbnNhY3Rpb25zOnJlYWQiXSwic3ViIjoidGluazovL2F1dGgvdXNlci9jZDU2YTZiOTk0Y2I0ZWY0OGRmYWE0MjlmMmZkZWRkNSIsInRpbms6Ly9hcHAvaWQiOiJmMmQ2NDQxZWM0OTQ0NTdmYjEwN2NhODIxNzdiYjhjYiJ9.hKAeE3W6nsyo1Og73hV7x8kRsLIUnT6oSfI9Gnt5HsbyPHQt1ZYBA0F_-L3nwhrXWaXyhA-PF0y9nrNVGvpiag';
+  final token ='';
   final response = await http.get(
     'https://api.tink.com/api/v1/transactions/',
     headers: {
