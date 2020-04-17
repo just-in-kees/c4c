@@ -38,7 +38,7 @@ class HomeTransaction extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Expanded(
-                          flex: 8, // takes 30% of available width
+                          flex: 8, // takes 80% of available width
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -53,18 +53,21 @@ class HomeTransaction extends StatelessWidget {
                                   style: transactionDetails,
                                 ),
                                 Text(
-                                  DateTime.fromMillisecondsSinceEpoch(
-                                              snapshot.data.date)
-                                          .day
-                                          .toString() +
+                                  DateTime
+                                      .fromMillisecondsSinceEpoch(
+                                      snapshot.data.date)
+                                      .day
+                                      .toString() +
                                       "/" +
-                                      DateTime.fromMillisecondsSinceEpoch(
-                                              snapshot.data.date)
+                                      DateTime
+                                          .fromMillisecondsSinceEpoch(
+                                          snapshot.data.date)
                                           .month
                                           .toString() +
                                       "/" +
-                                      DateTime.fromMillisecondsSinceEpoch(
-                                              snapshot.data.date)
+                                      DateTime
+                                          .fromMillisecondsSinceEpoch(
+                                          snapshot.data.date)
                                           .year
                                           .toString(),
                                   style: transactionDetails,
@@ -72,7 +75,7 @@ class HomeTransaction extends StatelessWidget {
                               ]),
                         ),
                         Expanded(
-                            flex: 2, // takes 30% of available width
+                            flex: 2, // takes 20% of available width
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: <Widget>[
@@ -81,10 +84,12 @@ class HomeTransaction extends StatelessWidget {
                                   child: Icon(Icons.show_chart, size: 50),
                                   backgroundColor: Colors.amber,
                                   onPressed: () {
+                                    Future<List<Transaction>> transactionList = fetchTransactionList();
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => SimilarTransactionScreen()),
+                                          builder: (context) =>
+                                              SimilarTransactionScreen(snapshot.data.description,transactionList)),
                                     );
                                   },
                                 )
@@ -108,23 +113,89 @@ class HomeTransaction extends StatelessWidget {
 }
 
 class SimilarTransactionScreen extends StatelessWidget {
+
+  final String transactionDescription;
+  final Future<List<Transaction>> transactionList;
+
+  SimilarTransactionScreen(this.transactionDescription, this.transactionList);
+
   @override
   Widget build(BuildContext context) {
+
+
+
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.orange,
-        title: Text("Similar Transactions"),
-      ),
-      body: Center(
-        child: RaisedButton(
-          onPressed: () {
-            // Navigate back to the first screen by popping the current route
-            // off the stack.
-            Navigator.pop(context);
-          },
-          child: Text('Go back!'),
+        appBar: AppBar(
+          backgroundColor: Colors.orange,
+          title: Text("Similar Transactions"),
         ),
-      ),
+        body: FutureBuilder<List<Transaction>>(
+
+            future: transactionList,
+            // ignore: missing_return
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return Text("${snapshot.error}");
+              }
+              if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+
+              if (snapshot.hasData){
+                List<Transaction> similarTransactions = [];
+                List<Transaction> transactions = snapshot.data;
+                for (var transaction in transactions){
+                  if (transactionDescription==transaction.description) {
+                    print(identical(transaction.description, transaction.amount));
+                    similarTransactions.add(transaction);
+                  }
+                }
+                return ListView.builder(
+                    itemCount: similarTransactions.length,
+                    itemBuilder: (BuildContext context, index) {
+                      return new ListTile(
+                          title: Padding(
+
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      similarTransactions[index].description,
+// Cuts of the text and shows ...
+                                      overflow: TextOverflow.ellipsis,
+
+                                    ),
+                                    Text(
+                                      similarTransactions[index].amount.toString(),
+
+                                    ),
+                                    Text(
+                                      DateTime
+                                          .fromMillisecondsSinceEpoch(
+                                          similarTransactions[index].date)
+                                          .day
+                                          .toString() +
+                                          "/" +
+                                          DateTime
+                                              .fromMillisecondsSinceEpoch(
+                                              similarTransactions[index].date)
+                                              .month
+                                              .toString() +
+                                          "/" +
+                                          DateTime
+                                              .fromMillisecondsSinceEpoch(
+                                              similarTransactions[index].date)
+                                              .year
+                                              .toString(),
+                                    ),
+                                  ]))
+                      );
+                    }
+                );
+              }
+            }
+        )
     );
   }
 }
@@ -148,7 +219,7 @@ class MyStatelessWidget extends StatelessWidget {
           RaisedButton(
             onPressed: () => fetchTransaction(10),
             child:
-                const Text('Other Transaction', style: TextStyle(fontSize: 20)),
+            const Text('Other Transaction', style: TextStyle(fontSize: 20)),
           ),
           const SizedBox(height: 30),
           trans(10),
@@ -158,10 +229,34 @@ class MyStatelessWidget extends StatelessWidget {
   }
 }
 
-Future<Transaction> fetchTransaction(int index) async {
-  final token =
-      '';
+Future<List<Transaction>> fetchTransactionList() async {
+  final token = '';
 
+  final response = await http.get(
+    'https://api.tink.com/api/v1/transactions/',
+    headers: {
+      HttpHeaders.authorizationHeader: "Bearer $token",
+    },
+  );
+
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    final responseJson = json.decode(response.body);
+
+    return (responseJson as List)
+        .map((p) => Transaction.fromJson(p))
+        .toList();
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception(
+        'Failed to load transactions ' + response.statusCode.toString());
+  }
+}
+
+Future<Transaction> fetchTransaction(int index) async {
+  final token = 'eyJhbGciOiJFUzI1NiIsImtpZCI6IjRlOTFmZTQ5LWE4MWMtNDlmMi1hNmVkLWQ0NWZmMGYxZmU0NSIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODcxMjA0ODAsImlhdCI6MTU4NzExMzI4MCwiaXNzIjoidGluazovL2F1dGgiLCJqdGkiOiIyMjFkYWY4Zi1jZDNiLTRmMTYtYmRjYS04OGU5Mjk3OGVjYWIiLCJvcmlnaW4iOiJtYWluIiwic2NvcGVzIjpbImludmVzdG1lbnRzOnJlYWQiLCJ1c2VyOnJlYWQiLCJzdGF0aXN0aWNzOnJlYWQiLCJhY2NvdW50czpyZWFkIiwidHJhbnNhY3Rpb25zOnJlYWQiXSwic3ViIjoidGluazovL2F1dGgvdXNlci80OTNjOTQxMGFkY2Y0ZTA1OWE2YmE3NzljMWI0YzQ1MSIsInRpbms6Ly9hcHAvaWQiOiJmMmQ2NDQxZWM0OTQ0NTdmYjEwN2NhODIxNzdiYjhjYiJ9.ai0_tztRt9DM2NFqcLptVW-rJBqiiWmBqdEiA3KCZtCB5xokmloCeHBXBAd6271pbjsdgdvfuNUoq_Tquk2SJQ';
   final response = await http.get(
     'https://api.tink.com/api/v1/transactions/',
     headers: {
@@ -263,47 +358,46 @@ class Transaction {
 
   final bool userModified;
 
-  Transaction(
-      {this.accountId,
-      this.amount,
-      this.categoryId,
-      this.categoryType,
-      this.credentialsId,
-      this.date,
-      this.description,
-      this.formattedDescription,
-      this.id,
-      this.inserted,
-      this.internalPayload,
-      this.lastModified,
-      this.merchantId,
-      this.notes,
-      this.originalAmount,
-      this.originalDate,
-      this.originalDescription,
-      this.payload,
-      this.MESSAGE,
-      this.TRANSFER_ACCOUNT_NAME_EXTERNAL,
-      this.DETAILS,
-      this.pending,
-      this.timestamp,
-      this.type,
-      this.userId,
-      this.upcoming,
-      this.userModifiedAmount,
-      this.userModifiedCategory,
-      this.userModifiedDate,
-      this.userModifiedDescription,
-      this.userModifiedLocation,
-      this.currencyDenominatedAmount,
-      this.unscaledValue,
-      this.scale,
-      this.currencyCode,
-      this.currencyDenominatedOriginalAmount,
-      this.parts,
-      this.partnerPayload,
-      this.dispensableAmount,
-      this.userModified});
+  Transaction({this.accountId,
+    this.amount,
+    this.categoryId,
+    this.categoryType,
+    this.credentialsId,
+    this.date,
+    this.description,
+    this.formattedDescription,
+    this.id,
+    this.inserted,
+    this.internalPayload,
+    this.lastModified,
+    this.merchantId,
+    this.notes,
+    this.originalAmount,
+    this.originalDate,
+    this.originalDescription,
+    this.payload,
+    this.MESSAGE,
+    this.TRANSFER_ACCOUNT_NAME_EXTERNAL,
+    this.DETAILS,
+    this.pending,
+    this.timestamp,
+    this.type,
+    this.userId,
+    this.upcoming,
+    this.userModifiedAmount,
+    this.userModifiedCategory,
+    this.userModifiedDate,
+    this.userModifiedDescription,
+    this.userModifiedLocation,
+    this.currencyDenominatedAmount,
+    this.unscaledValue,
+    this.scale,
+    this.currencyCode,
+    this.currencyDenominatedOriginalAmount,
+    this.parts,
+    this.partnerPayload,
+    this.dispensableAmount,
+    this.userModified});
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
     return Transaction(
@@ -343,7 +437,7 @@ class Transaction {
       scale: json['scale'],
       currencyCode: json['currencyCode'],
       currencyDenominatedOriginalAmount:
-          json['currencyDenominatedOriginalAmount'],
+      json['currencyDenominatedOriginalAmount'],
       parts: json['parts'],
       partnerPayload: json['partnerPayload'],
       dispensableAmount: json['dispensableAmount'],
@@ -351,7 +445,3 @@ class Transaction {
     );
   }
 }
-
-/*
-
-*/
