@@ -38,7 +38,7 @@ class HomeTransaction extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Expanded(
-                          flex: 8, // takes 30% of available width
+                          flex: 8, // takes 80% of available width
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -72,7 +72,7 @@ class HomeTransaction extends StatelessWidget {
                               ]),
                         ),
                         Expanded(
-                            flex: 2, // takes 30% of available width
+                            flex: 2, // takes 20% of available width
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: <Widget>[
@@ -81,10 +81,15 @@ class HomeTransaction extends StatelessWidget {
                                   child: Icon(Icons.show_chart, size: 50),
                                   backgroundColor: Colors.amber,
                                   onPressed: () {
+                                    Future<List<Transaction>> transactionList =
+                                        fetchTransactionList();
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => SimilarTransactionScreen()),
+                                          builder: (context) =>
+                                              SimilarTransactionScreen(
+                                                  snapshot.data.description,
+                                                  transactionList)),
                                     );
                                   },
                                 )
@@ -108,24 +113,108 @@ class HomeTransaction extends StatelessWidget {
 }
 
 class SimilarTransactionScreen extends StatelessWidget {
+  final String transactionDescription;
+  final Future<List<Transaction>> transactionList;
+
+  SimilarTransactionScreen(this.transactionDescription, this.transactionList);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.orange,
-        title: Text("Similar Transactions"),
-      ),
-      body: Center(
-        child: RaisedButton(
-          onPressed: () {
-            // Navigate back to the first screen by popping the current route
-            // off the stack.
-            Navigator.pop(context);
-          },
-          child: Text('Go back!'),
+        appBar: AppBar(
+          backgroundColor: Colors.orange,
+          title: Text("Similar Transactions"),
         ),
-      ),
-    );
+        body: FutureBuilder<List<Transaction>>(
+
+            future: transactionList,
+            // ignore: missing_return
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return Text("${snapshot.error}");
+              }
+              if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+              if (snapshot.hasData) {
+                List<Transaction> similarTransactions = [];
+                List<Transaction> transactions = snapshot.data;
+                for (var transaction in transactions) {
+                  if (transactionDescription == transaction.description) {
+                    print(
+                        identical(transaction.description, transaction.amount));
+                    similarTransactions.add(transaction);
+                  }
+                }
+                return ListView.builder(
+
+                    shrinkWrap: false,
+                    scrollDirection: Axis.vertical,
+                    itemCount: similarTransactions.length,
+                    itemBuilder: (BuildContext context, index) {
+                      return new ListTile(
+                        contentPadding: EdgeInsets.symmetric(
+                            horizontal: 15.0, vertical: 10.0),
+                        title: Container(
+                            margin: new EdgeInsets.symmetric(horizontal: 1.0, vertical: 1.0),
+                            decoration: BoxDecoration(color: Colors.orange,
+                                borderRadius: new BorderRadius.only(
+                                    topLeft:  const  Radius.circular(7.0),
+                                    topRight: const  Radius.circular(7.0),
+                                    bottomLeft:  const  Radius.circular(7.0),
+                                    bottomRight: const  Radius.circular(7.0))
+                            ),
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    similarTransactions[index].description,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Row(children: <Widget>[
+                                    Icon(Icons.euro_symbol,
+                                        color: Colors.white),
+                                    Text(
+                                      similarTransactions[index]
+                                          .amount
+                                          .toString(),
+                                    ),
+                                  ]),
+                                  Row(
+                                    children: <Widget>[
+                                      Icon(Icons.date_range,
+                                          color: Colors.white),
+                                      Text(
+                                        DateTime.fromMillisecondsSinceEpoch(
+                                                    similarTransactions[index]
+                                                        .date)
+                                                .day
+                                                .toString() +
+                                            "/" +
+                                            DateTime.fromMillisecondsSinceEpoch(
+                                                    similarTransactions[index]
+                                                        .date)
+                                                .month
+                                                .toString() +
+                                            "/" +
+                                            DateTime.fromMillisecondsSinceEpoch(
+                                                    similarTransactions[index]
+                                                        .date)
+                                                .year
+                                                .toString(),
+                                      ),
+                                    ],
+                                  ),
+                                ])),
+                      );
+                    });
+              }
+            }));
   }
 }
 
@@ -158,10 +247,31 @@ class MyStatelessWidget extends StatelessWidget {
   }
 }
 
-Future<Transaction> fetchTransaction(int index) async {
-  final token =
-      '';
+Future<List<Transaction>> fetchTransactionList() async {
+  final token ='';
+  final response = await http.get(
+    'https://api.tink.com/api/v1/transactions/',
+    headers: {
+      HttpHeaders.authorizationHeader: "Bearer $token",
+    },
+  );
 
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    final responseJson = json.decode(response.body);
+
+    return (responseJson as List).map((p) => Transaction.fromJson(p)).toList();
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception(
+        'Failed to load transactions ' + response.statusCode.toString());
+  }
+}
+
+Future<Transaction> fetchTransaction(int index) async {
+  final token ='';
   final response = await http.get(
     'https://api.tink.com/api/v1/transactions/',
     headers: {
@@ -351,7 +461,3 @@ class Transaction {
     );
   }
 }
-
-/*
-
-*/
