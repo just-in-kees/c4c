@@ -1,9 +1,11 @@
 import 'package:c4c_app/modules/global.dart';
+import 'package:c4c_app/modules/widgets/similar_transaction_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'dart:convert';
 
+final token = '';
 class HomeTransaction extends StatelessWidget {
   final Future<Transaction> futureTransaction;
   final String title;
@@ -81,15 +83,15 @@ class HomeTransaction extends StatelessWidget {
                                   child: Icon(Icons.show_chart, size: 50),
                                   backgroundColor: Colors.amber,
                                   onPressed: () {
-                                    Future<List<Transaction>> transactionList =
-                                        fetchTransactionList();
+                                    Future<SimilarTransactions> similarTransactions =
+                                    fetchSimilarTransactions(snapshot.data.id);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               SimilarTransactionScreen(
                                                   snapshot.data.description,
-                                                  transactionList)),
+                                                  similarTransactions)),
                                     );
                                   },
                                 )
@@ -113,10 +115,10 @@ class HomeTransaction extends StatelessWidget {
 }
 
 class SimilarTransactionScreen extends StatelessWidget {
-  final String transactionDescription;
-  final Future<List<Transaction>> transactionList;
+  final String transactionID;
+  final Future<SimilarTransactions> similarTransactions;
 
-  SimilarTransactionScreen(this.transactionDescription, this.transactionList);
+  SimilarTransactionScreen(this.transactionID, this.similarTransactions);
 
   @override
   Widget build(BuildContext context) {
@@ -125,9 +127,8 @@ class SimilarTransactionScreen extends StatelessWidget {
           backgroundColor: Colors.orange,
           title: Text("Similar Transactions"),
         ),
-        body: FutureBuilder<List<Transaction>>(
-
-            future: transactionList,
+        body: FutureBuilder<SimilarTransactions>(
+            future: similarTransactions,
             // ignore: missing_return
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
@@ -138,16 +139,15 @@ class SimilarTransactionScreen extends StatelessWidget {
               }
               if (snapshot.hasData) {
                 List<Transaction> similarTransactions = [];
-                List<Transaction> transactions = snapshot.data;
+                List<Transaction> transactions = snapshot.data.transactions;
                 for (var transaction in transactions) {
-                  if (transactionDescription == transaction.description) {
+                  if (transactionID == transaction.description) {
                     print(
                         identical(transaction.description, transaction.amount));
                     similarTransactions.add(transaction);
                   }
                 }
                 return ListView.builder(
-
                     shrinkWrap: false,
                     scrollDirection: Axis.vertical,
                     itemCount: similarTransactions.length,
@@ -156,14 +156,15 @@ class SimilarTransactionScreen extends StatelessWidget {
                         contentPadding: EdgeInsets.symmetric(
                             horizontal: 15.0, vertical: 10.0),
                         title: Container(
-                            margin: new EdgeInsets.symmetric(horizontal: 1.0, vertical: 1.0),
-                            decoration: BoxDecoration(color: Colors.orange,
+                            margin: new EdgeInsets.symmetric(
+                                horizontal: 1.0, vertical: 1.0),
+                            decoration: BoxDecoration(
+                                color: Colors.orange,
                                 borderRadius: new BorderRadius.only(
-                                    topLeft:  const  Radius.circular(7.0),
-                                    topRight: const  Radius.circular(7.0),
-                                    bottomLeft:  const  Radius.circular(7.0),
-                                    bottomRight: const  Radius.circular(7.0))
-                            ),
+                                    topLeft: const Radius.circular(7.0),
+                                    topRight: const Radius.circular(7.0),
+                                    bottomLeft: const Radius.circular(7.0),
+                                    bottomRight: const Radius.circular(7.0))),
                             padding: const EdgeInsets.all(16.0),
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,10 +248,10 @@ class MyStatelessWidget extends StatelessWidget {
   }
 }
 
-Future<List<Transaction>> fetchTransactionList() async {
-  final token ='';
+Future<SimilarTransactions> fetchSimilarTransactions(
+    String transactionId) async {
   final response = await http.get(
-    'https://api.tink.com/api/v1/transactions/',
+    'https://api.tink.com/api/v1/transactions/'+transactionId+'/similar',
     headers: {
       HttpHeaders.authorizationHeader: "Bearer $token",
     },
@@ -260,8 +261,7 @@ Future<List<Transaction>> fetchTransactionList() async {
     // If the server did return a 200 OK response,
     // then parse the JSON.
     final responseJson = json.decode(response.body);
-
-    return (responseJson as List).map((p) => Transaction.fromJson(p)).toList();
+    return SimilarTransactions.fromJson(responseJson);
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
@@ -271,7 +271,6 @@ Future<List<Transaction>> fetchTransactionList() async {
 }
 
 Future<Transaction> fetchTransaction(int index) async {
-  final token ='';
   final response = await http.get(
     'https://api.tink.com/api/v1/transactions/',
     headers: {
