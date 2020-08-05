@@ -22,8 +22,8 @@ class HomeTransaction extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(10)),
           boxShadow: [
             new BoxShadow(
-              color: Colors.black.withOpacity(0.5),
-              blurRadius: 10.0,
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 6.0,
             )
           ]),
       child: Row(
@@ -124,7 +124,8 @@ class SimilarTransactionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.orange,
+          elevation: 0.1,
+          backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
           title: Text("Similar Transactions"),
         ),
         body: FutureBuilder<SimilarTransactions>(
@@ -234,13 +235,12 @@ class MyStatelessWidget extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          const SizedBox(height: 30),
+          const SizedBox(height: 20),
           RaisedButton(
             onPressed: () => fetchTransaction(10),
             child:
                 const Text('Other Transaction', style: TextStyle(fontSize: 20)),
           ),
-          const SizedBox(height: 30),
           trans(10),
         ],
       ),

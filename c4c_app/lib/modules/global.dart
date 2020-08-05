@@ -6,19 +6,19 @@ TextStyle homeTitles = new TextStyle(
     fontFamily: 'Avenir',
     fontWeight: FontWeight.bold,
     color: Colors.black54,
-    fontSize: 40,
+    fontSize: 30,
 );
 
 TextStyle transactionDetails = new TextStyle(
     fontFamily: 'Avenir',
     fontWeight: FontWeight.bold,
     color: Colors.black54,
-    fontSize: 20
+    fontSize: 16
 );
 
 TextStyle transactionDate = new TextStyle(
     fontFamily: 'Avenir',
     fontWeight: FontWeight.bold,
     color: Colors.black54,
-    fontSize: 10
+    fontSize: 8
 );

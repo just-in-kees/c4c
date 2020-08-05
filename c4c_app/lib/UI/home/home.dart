@@ -13,9 +13,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
    return Container(
-     color: Colors.orange,
+     color: Color.fromRGBO(64, 75, 96, .9),
      child: ListView(
-       padding: EdgeInsets.only(top: 100),
+       padding: EdgeInsets.only(top: 110),
        children: getList(),
      ),
    );
@@ -27,10 +27,6 @@ class _HomePageState extends State<HomePage> {
       list.add(HomeTransaction(title: "hello", futureTransaction: fetchTransaction(i))); //,title: "Transaction",));
     }
     return list;
-  }
-
-  Widget getTransaciton() {
-
   }
 
 }

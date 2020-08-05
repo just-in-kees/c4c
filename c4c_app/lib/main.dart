@@ -7,22 +7,12 @@ import 'dart:io';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'C4C app',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.orange,
       ),
       home: MyHomePage(title: 'C4C App'),
     );
@@ -49,11 +39,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        color: Colors.yellow,
+        color: Colors.white,
         home: SafeArea(
           child: DefaultTabController(
             length: 4,
@@ -63,13 +52,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   TabBarView(
                     children: [
                       HomePage(),
-                      new Container(color: Colors.yellow,),
-                      new Container(
-                        color: Colors.lightGreen,
-                      ),
-                      new Container(
-                        color: Colors.red,
-                      ),
+                      new Container(color: Color.fromRGBO(58, 66, 86, 1.0)),
+                      new Container(color: Color.fromRGBO(58, 66, 86, 1.0)),
+                      new Container(color: Color.fromRGBO(58, 66, 86, 1.0)),
                     ],
                   ),
                     Container (
@@ -77,15 +62,15 @@ class _MyHomePageState extends State<MyHomePage> {
                       height: 100,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(50),
-                          bottomRight: Radius.circular(50),
+                          bottomLeft: Radius.circular(30),
+                          bottomRight: Radius.circular(30),
                         ),
-                        color: Colors.orangeAccent,
+                        color: Colors.white70,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text("C4C", style: homeTitles),
+                          Text("Transactions", style: homeTitles),
                           Container()
                         ],
                       )
@@ -98,17 +83,18 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: FloatingActionButton(
                         child: Container(
                             child: Icon(Icons.add, size: 50)),
-                        backgroundColor: Colors.red,
+                        backgroundColor: Colors.green,
                         onPressed: (){},
                       ),
                     )
               ],
               ),
 //            Choose appbar to have the icons on top, bottomnavigationbar for icons on the bottom
-              appBar: AppBar(
-                elevation: 0,
+              /*appBar: AppBar(
+                elevation: 0.1,
+                backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
                 title : new TabBar(
-//          bottomNavigationBar: new TabBar(
+//              bottomNavigationBar: new TabBar(
                 tabs: [
                   Tab(
                     icon: new Icon(Icons.home),
@@ -125,13 +111,53 @@ class _MyHomePageState extends State<MyHomePage> {
                 unselectedLabelColor: Colors.white70,
                 indicatorSize: TabBarIndicatorSize.label,
                 indicatorPadding: EdgeInsets.all(5.0),
-                indicatorColor: Colors.deepOrangeAccent,
+                indicatorColor: Colors.white12,
               ),
-              backgroundColor: Colors.orangeAccent,
-            ),
+            ),*/
+              appBar: topAppBar,
+              bottomNavigationBar: makeBottom,
           ),
         ),
         ),
       );
   }
 }
+final topAppBar = AppBar(
+  elevation: 0.1,
+  backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
+  title: Text("C4C"),
+  actions: <Widget>[
+    IconButton(
+      icon: Icon(Icons.local_phone),
+      onPressed: () {},
+    )
+  ],
+);
+
+final makeBottom = Container(
+  height: 55.0,
+  child: BottomAppBar(
+    color: Color.fromRGBO(58, 66, 86, 1.0),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        IconButton(
+          icon: Icon(Icons.home, color: Colors.white),
+          onPressed: () {},
+        ),
+        IconButton(
+          icon: Icon(Icons.blur_on, color: Colors.white),
+          onPressed: () {},
+        ),
+        IconButton(
+          icon: Icon(Icons.hotel, color: Colors.white),
+          onPressed: () {},
+        ),
+        IconButton(
+          icon: Icon(Icons.account_box, color: Colors.white),
+          onPressed: () {},
+        )
+      ],
+    ),
+  ),
+);
