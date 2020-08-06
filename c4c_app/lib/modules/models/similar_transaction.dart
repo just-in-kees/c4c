@@ -1,4 +1,4 @@
-import 'package:c4c_app/modules/widgets/transaction_widget.dart';
+import 'package:c4c_app/modules/models/transaction.dart';
 
 class SimilarTransactions {
   List<Statistics> statistics;
